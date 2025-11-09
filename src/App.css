@@ -1,0 +1,161 @@
+*,
+*::before,
+*::after {
+  outline: 0;
+  box-sizing: border-box;
+  margin: 0px;
+  padding: 0px;
+}
+
+ol, ul {
+  list-style: none;
+}
+
+:root {
+  /* Colors */
+  --color-brown: #88533c;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-gray: #707070;
+  --color-dark-gray: #494949;
+  --color-yellow: #ffb841;
+
+  /* Breakpoints */
+  --phone-sm: 576px;
+  --tablet-md: 768px;
+  --desktop-lg: 992px;
+  --desktop-xl: 1200px;
+  --desktop-xxl: 1600px;
+
+  /* Font Families */
+  --font-primary: "Roboto";
+  --font-family: --font-primary, "Helvetica", "Arial", "sans-serif";
+
+  /* Font Weights */
+  --light: 300;
+  --regular: 400;
+  --bold: 500;
+
+  /* Font Sizes */
+  --font-xxs: 0.625rem;
+  --font-xs: 0.75rem;
+  --font-sm: 0.875rem;
+  --font-default: 1rem;
+  --font-md: 1.5rem;
+  --font-lg: 2rem;
+  --font-xl: 3rem;
+  --font-xxl: 4rem;
+
+  --sidebarWidth: 18.75;
+  --headerHeight: 4.375rem;
+}
+
+html,
+body {
+	background-color: var(--color-white);
+	color: var(--color-dark-gray);
+	font-size: 3.88349514vw;
+	font-weight: var(--light);
+	letter-spacing: 0.09375rem;
+
+}
+@media (min-width: 576px) {
+  html, body {
+    font-size: 2.8vw;
+  }
+}
+@media (min-width: 768px) {
+  html, body {
+    font-size: 1vw;
+  }
+}
+@media (min-width: 992px) {
+  html, body {
+    font-size: 0.8333333333vw;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin-bottom: 0;
+}
+
+button {
+  border: none;
+}
+button:active {
+  opacity: 0.6;
+}
+
+a {
+	text-decoration: none;
+}
+
+p {
+	font-size: var(--font-default);
+	margin-bottom: 0;
+}
+
+img {
+  width: 100%;
+}
+
+.mtg-life-counter-app {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+}
+
+.players-list {
+	display: flex;
+	width: 100%;
+	height: calc(100vh - var(--headerHeight));
+}
+
+.main-container {
+	width: 100%;
+	padding: 0;
+}
+
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

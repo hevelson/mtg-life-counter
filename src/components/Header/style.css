@@ -1,0 +1,77 @@
+.top-bar-header {
+    width: 100%;
+    height: var(--headerHeight);
+    background-color: var(--color-brown);
+    display: flex;
+    justify-content: space-between;
+}
+
+.top-bar-header button {
+    display: block;
+    height: 100%;
+    min-width: 3.125rem;
+    background-color: var(--color-brown);
+}
+
+.top-bar-header button img {
+    width: 100%;
+}
+
+.top-bar-header .button-menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--headerHeight);
+}
+.top-bar-header .button-menu .menu-icon,
+.top-bar-header .button-menu .menu-icon::before,
+.top-bar-header .button-menu .menu-icon::after {
+    content: "";
+    width: 1.25rem;
+    height: 0.125rem;
+    background-color: var(--color-white);
+}
+
+.top-bar-header .button-menu .menu-icon {
+    display: block;
+    position: relative;
+    font-size: 0;
+}
+.top-bar-header .button-menu .menu-icon::before {
+    position: absolute;
+    top: -0.375rem;
+    left: 0;
+}
+.top-bar-header .button-menu .menu-icon::after {
+    position: absolute;
+    top: 0.375rem;
+    left: 0;
+}
+
+.top-bar-header .button-select-format {
+    width: 10.9375rem;
+    color: var(--color-white);
+}
+
+.top-bar-header .button-roll-dice {
+    width: 3.125rem;
+    padding: 0.125rem;
+}
+.top-bar-header .button-roll-dice img {
+    width: 1.5rem;
+}
+
+.top-bar-header .button-new-game {
+    width: 3.125rem;
+    padding: 0.125rem;
+}
+.top-bar-header .button-new-game img {
+    width: 1.5rem;
+}
+.top-bar-header .button-reset-game {
+    width: 3.125rem;
+    padding: 0.125rem;
+}
+.top-bar-header .button-reset-game img {
+    width: 1.5rem;
+}
