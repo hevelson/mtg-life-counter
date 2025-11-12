@@ -1,12 +1,17 @@
 import { useState } from 'react';
 
+import { PlayerType } from '../../contexts/GameContext';
 import HeartIcon from '../../images/heart-icon.svg';
 import PoisonIcon from '../../images/poison-icon.svg';
 import EnergyIcon from '../../images/energy-icon.svg';
 import CommandIcon from '../../images/command-zone-icon-1.svg';
 import './style.css';
 
-const Player = () => {
+interface PlayerProps {
+    player: PlayerType;
+}
+
+const Player = ({ player }: PlayerProps) => {
     const [activeTab, setActiveTab] = useState('general-damage');
 
     const handleActiveTab = (tabName: string) => {
@@ -59,7 +64,7 @@ const Player = () => {
     return (
         <section className="player-section">
             <header>
-                <h2>Player name</h2>
+                <h2>{player.name}</h2>
                 <div className="player-counters">
                     <div className="select-counter">
                         <button>
