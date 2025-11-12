@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import { PlayerType } from '../../contexts/GameContext';
+import { PlayerType, useGame } from '../../contexts/GameContext';
 import HeartIcon from '../../images/heart-icon.svg';
 import PoisonIcon from '../../images/poison-icon.svg';
 import EnergyIcon from '../../images/energy-icon.svg';
@@ -9,13 +9,43 @@ import './style.css';
 
 interface PlayerProps {
     player: PlayerType;
+    playerKey: number;
 }
 
-const Player = ({ player }: PlayerProps) => {
+const Player = ({ player, playerKey }: PlayerProps) => {
+    const { players, setPlayers } = useGame();
     const [activeTab, setActiveTab] = useState('general-damage');
 
     const handleActiveTab = (tabName: string) => {
         setActiveTab(tabName);
+    };
+
+    const setPlayerLife = (newLife: number) => {
+        const player = players[playerKey];
+
+        const updatedPlayer: PlayerType = {
+            ...player,
+            lifePoints: newLife
+        };
+
+        const updatePlayersList = players.map((player, key) => {
+            if (key === playerKey) return updatedPlayer;
+            return player;
+        });
+
+        setPlayers(updatePlayersList);
+    };
+
+    const increaseLife = (amount: number) => {
+        const { lifePoints } = player;
+        const newLife = lifePoints + amount;
+        setPlayerLife(newLife);
+    };
+
+    const decreaseLife = (amount: number) => {
+        const { lifePoints } = player;
+        const newLife = lifePoints - amount;
+        setPlayerLife(newLife);
     };
 
     const renderHistory = () => {
@@ -67,14 +97,14 @@ const Player = ({ player }: PlayerProps) => {
                 <h2>{player.name}</h2>
                 <div className="player-counters">
                     <div className="select-counter">
-                        <button>
+                        <button type="button">
                             <img src={PoisonIcon} alt="Poison counters" />
                             <span>0</span>
                         </button>
                         <button className="active">
                             <img src={HeartIcon} alt="Life" />
                         </button>
-                        <button>
+                        <button type="button">
                             <img src={EnergyIcon} alt="Energy counters" />
                             <span>0</span>
                         </button>
@@ -83,16 +113,16 @@ const Player = ({ player }: PlayerProps) => {
                         <span className="commander-cast-counter">
                             <img src={CommandIcon} alt="commander cast counter" />
                         </span>
-                        {40}
+                        {player.lifePoints}
                     </div>
                 </div>
             </header>
             <div>
                 <nav className="history-tabs">
-                    <button className={`tab-nav ${activeTab === 'general-damage' && ' active'}`} onClick={() => {handleActiveTab('general-damage')}}>
+                    <button type="button" className={`tab-nav ${activeTab === 'general-damage' && ' active'}`} onClick={() => {handleActiveTab('general-damage')}}>
                         Generals
                     </button>
-                    <button className={`tab-nav ${activeTab === 'life-history' && ' active'}`} onClick={() => {handleActiveTab('life-history')}}>
+                    <button type="button" className={`tab-nav ${activeTab === 'life-history' && ' active'}`} onClick={() => {handleActiveTab('life-history')}}>
                         History
                     </button>
                 </nav>
@@ -101,10 +131,10 @@ const Player = ({ player }: PlayerProps) => {
                 </div>
             </div>
             <footer>
-                <button>-1</button>
-                <button>-5</button>
-                <button>+1</button>
-                <button>+5</button>
+                <button type="button" onClick={() => decreaseLife(1)}>-1</button>
+                <button type="button" onClick={() => decreaseLife(5)}>-5</button>
+                <button type="button" onClick={() => increaseLife(1)}>+1</button>
+                <button type="button" onClick={() => increaseLife(5)}>+5</button>
             </footer>
         </section>
     );

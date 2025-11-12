@@ -64,7 +64,7 @@ const GameProvider = ({ children, initialState }: GameProviderProps) => {
         <GameContext.Provider value={{
             players, setPlayers,
             gameType, setGameType,
-            numberOfPlayers, setNumberOfPlayers
+            numberOfPlayers, setNumberOfPlayers,
         }}>
             {children}
         </GameContext.Provider>
