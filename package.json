@@ -6,7 +6,11 @@
     "type": "git",
     "url": "git+https://github.com/hevelson/magic-life-counter.git"
   },
-  "keywords": ["mtg", "magic", "life", "counter"],
+  "keywords": [
+    "mtg",
+    "magic: the gathering",
+    "magic life counter"
+  ],
   "author": "Hevelson Rosario",
   "license": "ISC",
   "bugs": {
