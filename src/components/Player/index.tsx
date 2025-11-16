@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useGame } from '../../contexts/GameContext';
 import gameTypes from '../../constants/gameTypes';
@@ -15,20 +15,44 @@ interface PlayerProps {
     playerKey: number;
 }
 
+enum lifeOperation {
+    plus = '+',
+    minus = '-',
+}
+
+const getLifeHistoryRegister = (oldLife: number, newLife: number) => {
+    if (oldLife > newLife) {
+        const difference = oldLife - newLife;
+        return `${oldLife} (-${difference})`;
+    }
+
+    if (oldLife < newLife) {
+        const difference = newLife - oldLife;
+        return `${oldLife} (+${difference})`;
+    }
+
+    return false;
+}
+
 const Player = ({ player, playerKey }: PlayerProps) => {
     const { players, setPlayers, gameType } = useGame();
-    const [activeTab, setActiveTab] = useState('life-history');
+    const [activeCounter, setActiveCounter] = useState<'life' | 'poison' | 'energy'>('life');
+    const [activeTab, setActiveTab] = useState<'life-history' | 'general-damage'>('life-history');
+    const [tempLifeAmount, setTempLifeAmount] = useState(player.lifePoints);
 
-    const handleActiveTab = (tabName: string) => {
-        setActiveTab(tabName);
-    };
+    const setPlayerLife = (newLifeTotal: number) => {
+        const { lifePointsHistory } = player;
+        const newHistoryLifeItem = getLifeHistoryRegister(player.lifePoints, newLifeTotal);
+        const newLifePointsHistory = [...lifePointsHistory];
 
-    const setPlayerLife = (newLife: number) => {
-        const player = players[playerKey];
+        if (newHistoryLifeItem) {
+            newLifePointsHistory.push(newHistoryLifeItem);
+        }
 
         const updatedPlayer: PlayerType = {
-            ...player,
-            lifePoints: newLife
+            ...players[playerKey],
+            lifePoints: newLifeTotal,
+            lifePointsHistory: newLifePointsHistory
         };
 
         const updatePlayersList = players.map((player, key) => {
@@ -39,26 +63,70 @@ const Player = ({ player, playerKey }: PlayerProps) => {
         setPlayers(updatePlayersList);
     };
 
-    const increaseLife = (amount: number) => {
-        const { lifePoints } = player;
-        const newLife = lifePoints + amount;
-        setPlayerLife(newLife);
+    const changeLife = (amount: number, operation: lifeOperation) => {
+        if (operation === lifeOperation.plus) {
+            setTempLifeAmount((prev) => prev + amount);
+        } else {
+            setTempLifeAmount((prev) => prev - amount);
+        }
     };
 
-    const decreaseLife = (amount: number) => {
-        const { lifePoints } = player;
-        const newLife = lifePoints - amount;
-        setPlayerLife(newLife);
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setPlayerLife(tempLifeAmount);
+        }, 1500);
+
+        return () => clearTimeout(timer);
+        // eslint-disable-next-line
+    }, [tempLifeAmount]);
+
+    const renderPlayerCounters = () => {
+        return (
+            <div className="player-counters">
+                <div className="select-counter">
+                    <button
+                        type="button"
+                        className={`${activeCounter === 'poison' && 'active'}`}
+                        onClick={() => setActiveCounter('poison')}
+                    >
+                        <img src={PoisonIcon} alt="Poison counters" />
+                        <span className={`${activeCounter === 'poison' && 'hide'}`}>{player.posionCounter}</span>
+                    </button>
+                    <button
+                        type="button"
+                        className={`${activeCounter === 'life' && 'active'}`}
+                        onClick={() => setActiveCounter('life')}
+                    >
+                        <img src={HeartIcon} alt="Life" />
+                        <span className={`${activeCounter === 'life' && 'hide'}`}>{player.lifePoints}</span>
+                    </button>
+                    <button
+                        type="button"
+                        className={`${activeCounter === 'energy' && 'active'}`}
+                        onClick={() => setActiveCounter('energy')}
+                    >
+                        <img src={EnergyIcon} alt="Energy counters" />
+                        <span className={`${activeCounter === 'energy' && 'hide'}`}>{player.energyCounters}</span>
+                    </button>
+                </div>
+                <div className="active-counter">
+                    <span className="commander-cast-counter">
+                        <img src={CommandIcon} alt="commander cast counter" />
+                    </span>
+                    {tempLifeAmount}
+                </div>
+            </div>
+        );
     };
 
     const renderNavHistory = () => {
         if (gameType === gameTypes.commander || gameType === gameTypes.duelcommander) {
             return (
                 <nav className="history-tabs">
-                    <button type="button" className={`tab-nav ${activeTab === 'general-damage' && ' active'}`} onClick={() => {handleActiveTab('general-damage')}}>
+                    <button type="button" className={`tab-nav ${activeTab === 'general-damage' && ' active'}`} onClick={() => {setActiveTab('general-damage')}}>
                         Generals
                     </button>
-                    <button type="button" className={`tab-nav ${activeTab === 'life-history' && ' active'}`} onClick={() => {handleActiveTab('life-history')}}>
+                    <button type="button" className={`tab-nav ${activeTab === 'life-history' && ' active'}`} onClick={() => {setActiveTab('life-history')}}>
                         History
                     </button>
                 </nav>
@@ -95,14 +163,12 @@ const Player = ({ player, playerKey }: PlayerProps) => {
         }
 
         if (activeTab === 'life-history') {
+            const { lifePointsHistory } = player;
             return (
                 <div className="life-history">
                     <ul>
-                        <li>40(-5)</li>
-                        <li>35(-2)</li>
-                        <li>33(+1)</li>
-                        <li>34(-8)</li>
-                        <li>26</li>
+                        {lifePointsHistory.map((item, key) => <li key={key}>{item}</li>)}
+                        <li>{getLifeHistoryRegister(player.lifePoints, tempLifeAmount) || tempLifeAmount}</li>
                     </ul>
                 </div>
             );
@@ -115,27 +181,7 @@ const Player = ({ player, playerKey }: PlayerProps) => {
         <section className="player-section">
             <header>
                 <h2>{player.name}</h2>
-                <div className="player-counters">
-                    <div className="select-counter">
-                        <button type="button">
-                            <img src={PoisonIcon} alt="Poison counters" />
-                            <span>0</span>
-                        </button>
-                        <button className="active">
-                            <img src={HeartIcon} alt="Life" />
-                        </button>
-                        <button type="button">
-                            <img src={EnergyIcon} alt="Energy counters" />
-                            <span>0</span>
-                        </button>
-                    </div>
-                    <div className="active-counter">
-                        <span className="commander-cast-counter">
-                            <img src={CommandIcon} alt="commander cast counter" />
-                        </span>
-                        {player.lifePoints}
-                    </div>
-                </div>
+                {renderPlayerCounters()}
             </header>
             <div>
                 {renderNavHistory()}
@@ -144,10 +190,10 @@ const Player = ({ player, playerKey }: PlayerProps) => {
                 </div>
             </div>
             <footer>
-                <button type="button" onClick={() => decreaseLife(1)}>-1</button>
-                <button type="button" onClick={() => decreaseLife(5)}>-5</button>
-                <button type="button" onClick={() => increaseLife(1)}>+1</button>
-                <button type="button" onClick={() => increaseLife(5)}>+5</button>
+                <button type="button" onClick={() => changeLife(1, lifeOperation.minus)}>-1</button>
+                <button type="button" onClick={() => changeLife(5, lifeOperation.minus)}>-5</button>
+                <button type="button" onClick={() => changeLife(1, lifeOperation.plus)}>+1</button>
+                <button type="button" onClick={() => changeLife(5, lifeOperation.plus)}>+5</button>
             </footer>
         </section>
     );

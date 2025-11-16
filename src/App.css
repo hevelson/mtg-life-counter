@@ -105,6 +105,10 @@ img {
   width: 100%;
 }
 
+.hide {
+  display: none;
+}
+
 .mtg-life-counter-app {
 	display: flex;
 	flex-direction: column;

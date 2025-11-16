@@ -4,7 +4,7 @@ export interface PlayerType {
     id: string;
     name: string;
     lifePoints: number;
-    lifePointsHistory: number[];
+    lifePointsHistory: string[];
     posionCounter: number;
     energyCounters: number;
     commanderDamage: CommanderDamageType[];
