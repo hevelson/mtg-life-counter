@@ -4,6 +4,7 @@
     width: 50vw;
     border-left: 1px solid var(--color-gray);
     overflow: hidden;
+    flex: none;
 }
 .player-section:first-child {
     border: 0px;

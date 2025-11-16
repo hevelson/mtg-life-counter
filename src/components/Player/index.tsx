@@ -1,6 +1,9 @@
 import { useState } from 'react';
 
-import { PlayerType, useGame } from '../../contexts/GameContext';
+import { useGame } from '../../contexts/GameContext';
+import gameTypes from '../../constants/gameTypes';
+import { PlayerType } from '../../types/player';
+
 import HeartIcon from '../../images/heart-icon.svg';
 import PoisonIcon from '../../images/poison-icon.svg';
 import EnergyIcon from '../../images/energy-icon.svg';
@@ -13,8 +16,8 @@ interface PlayerProps {
 }
 
 const Player = ({ player, playerKey }: PlayerProps) => {
-    const { players, setPlayers } = useGame();
-    const [activeTab, setActiveTab] = useState('general-damage');
+    const { players, setPlayers, gameType } = useGame();
+    const [activeTab, setActiveTab] = useState('life-history');
 
     const handleActiveTab = (tabName: string) => {
         setActiveTab(tabName);
@@ -46,6 +49,23 @@ const Player = ({ player, playerKey }: PlayerProps) => {
         const { lifePoints } = player;
         const newLife = lifePoints - amount;
         setPlayerLife(newLife);
+    };
+
+    const renderNavHistory = () => {
+        if (gameType === gameTypes.commander || gameType === gameTypes.duelcommander) {
+            return (
+                <nav className="history-tabs">
+                    <button type="button" className={`tab-nav ${activeTab === 'general-damage' && ' active'}`} onClick={() => {handleActiveTab('general-damage')}}>
+                        Generals
+                    </button>
+                    <button type="button" className={`tab-nav ${activeTab === 'life-history' && ' active'}`} onClick={() => {handleActiveTab('life-history')}}>
+                        History
+                    </button>
+                </nav>
+            );
+        }
+
+        return null;
     };
 
     const renderHistory = () => {
@@ -118,14 +138,7 @@ const Player = ({ player, playerKey }: PlayerProps) => {
                 </div>
             </header>
             <div>
-                <nav className="history-tabs">
-                    <button type="button" className={`tab-nav ${activeTab === 'general-damage' && ' active'}`} onClick={() => {handleActiveTab('general-damage')}}>
-                        Generals
-                    </button>
-                    <button type="button" className={`tab-nav ${activeTab === 'life-history' && ' active'}`} onClick={() => {handleActiveTab('life-history')}}>
-                        History
-                    </button>
-                </nav>
+                {renderNavHistory()}
                 <div className="number-content">
                     {renderHistory()}
                 </div>

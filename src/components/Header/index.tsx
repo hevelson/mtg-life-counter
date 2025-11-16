@@ -4,28 +4,35 @@ import './style.css';
 import DiceIcon from '../../images/dice-icon.svg';
 import ManaIcon from '../../images/mana-icon.svg';
 import ResetIcon from '../../images/vertical-dots-icon.svg';
+import ModalSelectGameType from './ModalSelectGameType';
+import { useGame } from '../../contexts/GameContext';
 
 const Header = () => {
-    const [format] = useState('Commander (EDH)');
-    const [players] = useState(4);
+    const { gameType, numberOfPlayers } = useGame();
+    const [modalGameIsOpen, setModalGameIsOpen] = useState(false);
+
+    const closeModalGame = () => {
+        setModalGameIsOpen(false);
+    };
 
     return (
         <header className="top-bar-header">
-            <button className="button-menu">
+            <button type="button" className="button-menu">
                 <span className="menu-icon">Menu</span>
             </button>
-            <button className="button-select-format">
-                {`${format} - ${players} Players`}
+            <button type="button" onClick={() => { setModalGameIsOpen(true) }} className="button-select-format">
+                {`${gameType} - ${numberOfPlayers} Players`}
             </button>
-            <button className="button-roll-dice">
+            <button type="button" className="button-roll-dice">
                 <img src={DiceIcon} alt="roll dice" />
             </button>
-            <button className="button-new-game">
+            <button type="button" className="button-new-game">
                 <img src={ManaIcon} alt="new game" />
             </button>
-            <button className="button-reset-game">
+            <button type="button" className="button-reset-game">
                 <img src={ResetIcon} alt="reset game" />
             </button>
+            <ModalSelectGameType modalIsOpen={modalGameIsOpen} closeModal={closeModalGame} />
         </header>
     );
 };
