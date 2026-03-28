@@ -2,10 +2,10 @@ import { useGame } from "../contexts/GameContext";
 import Player from "./Player";
 
 const PlayersList = () => {
-    const { players } = useGame();
+    const { gameUUID, players } = useGame();
     return (
         <section className="players-list">
-            {players.map((player, key) => <Player player={player} playerKey={key} key={key} />)}
+            {players.map((player) => <Player player={player} playerId={player.id} key={`${player.id}-${gameUUID}`} />)}
         </section>
     );
 };

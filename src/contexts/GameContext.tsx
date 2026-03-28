@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { v4 as uuidv4 } from 'uuid';
 import gameTypes from '../constants/gameTypes';
 import { GameInfo } from '../types/game';
 import { PlayerType } from '../types/player';
 import { defaultPlayer } from '../constants/defaultPlayer';
 
 export interface GameContextType extends GameInfo {
+    gameUUID: string;
     setPlayers: React.Dispatch<React.SetStateAction<PlayerType[]>>;
     setGameType: React.Dispatch<React.SetStateAction<gameTypes>>;
     setNumberOfPlayers: React.Dispatch<React.SetStateAction<number>>;
@@ -33,21 +35,25 @@ const lifeTotalByGameType = (gameType: gameTypes): number => {
 };
 
 const GameProvider = ({ children, initialState }: GameProviderProps) => {
+    let defaultGameId = uuidv4();
     let defaultGameType: gameTypes = gameTypes.basic;
     let defaultNumberOfPlayers = 2;
     let defaultPlayers: PlayerType[] = [];
 
     if (initialState) {
         const {
+            id: initialGameId,
             gameType: initialGameType,
             numberOfPlayers: initialNumberOfPlayers,
             players: initialPlayers,
         } = initialState;
+        defaultGameId = initialGameId || defaultGameId;
         defaultGameType = initialGameType;
         defaultNumberOfPlayers = initialNumberOfPlayers;
-        defaultPlayers = initialPlayers
+        defaultPlayers = initialPlayers;
     }
 
+    const [gameUUID, setGameUUID] = useState<string>(defaultGameId);
     const [gameType, setGameType] = useState<gameTypes>(defaultGameType);
     const [numberOfPlayers, setNumberOfPlayers] = useState<number>(defaultNumberOfPlayers);
     const [players, setPlayers] = useState<PlayerType[]>(defaultPlayers);
@@ -56,7 +62,11 @@ const GameProvider = ({ children, initialState }: GameProviderProps) => {
         let newPlayerList = [...players];
         if (newTotalPlayers > players.length) {
             for (let i = players.length; i < newTotalPlayers; i++) {
-                newPlayerList.push(defaultPlayer);
+                const newPlayer = {
+                    ...defaultPlayer,
+                    id: uuidv4(),
+                }
+                newPlayerList.push(newPlayer);
             }
         }
     
@@ -68,15 +78,19 @@ const GameProvider = ({ children, initialState }: GameProviderProps) => {
 
         newPlayerList = newPlayerList.map(player => {
             player.lifePoints = newLifeTotal;
+
+            player.lifePointsHistory = [];
             return player;
         });
 
         setGameType(newGameType);
         setPlayers(newPlayerList);
+        setGameUUID(uuidv4());
     };
 
     return (
         <GameContext.Provider value={{
+            gameUUID,
             players, setPlayers,
             gameType, setGameType,
             numberOfPlayers, setNumberOfPlayers,

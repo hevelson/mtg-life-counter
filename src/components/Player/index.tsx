@@ -12,7 +12,7 @@ import './style.css';
 
 interface PlayerProps {
     player: PlayerType;
-    playerKey: number;
+    playerId: string;
 }
 
 enum lifeOperation {
@@ -32,36 +32,31 @@ const getLifeHistoryRegister = (oldLife: number, newLife: number) => {
     }
 
     return false;
-}
+};
 
-const Player = ({ player, playerKey }: PlayerProps) => {
-    const { players, setPlayers, gameType } = useGame();
+const playerNewLifeHistory = (player: PlayerType, newLifeTotal: number) => {
+    const { lifePointsHistory } = player;
+    const newHistoryLifeItem = getLifeHistoryRegister(player.lifePoints, newLifeTotal);
+    const newLifePointsHistory = [...lifePointsHistory];
+
+    if (newHistoryLifeItem) {
+        newLifePointsHistory.push(newHistoryLifeItem);
+    }
+
+    const updatedPlayer: PlayerType = {
+        ...player,
+        lifePoints: newLifeTotal,
+        lifePointsHistory: newLifePointsHistory
+    };
+
+    return updatedPlayer;
+};
+
+const Player = ({ player, playerId }: PlayerProps) => {
+    const { setPlayers, gameType } = useGame();
     const [activeCounter, setActiveCounter] = useState<'life' | 'poison' | 'energy'>('life');
     const [activeTab, setActiveTab] = useState<'life-history' | 'general-damage'>('life-history');
     const [tempLifeAmount, setTempLifeAmount] = useState(player.lifePoints);
-
-    const setPlayerLife = (newLifeTotal: number) => {
-        const { lifePointsHistory } = player;
-        const newHistoryLifeItem = getLifeHistoryRegister(player.lifePoints, newLifeTotal);
-        const newLifePointsHistory = [...lifePointsHistory];
-
-        if (newHistoryLifeItem) {
-            newLifePointsHistory.push(newHistoryLifeItem);
-        }
-
-        const updatedPlayer: PlayerType = {
-            ...players[playerKey],
-            lifePoints: newLifeTotal,
-            lifePointsHistory: newLifePointsHistory
-        };
-
-        const updatePlayersList = players.map((player, key) => {
-            if (key === playerKey) return updatedPlayer;
-            return player;
-        });
-
-        setPlayers(updatePlayersList);
-    };
 
     const changeLife = (amount: number, operation: lifeOperation) => {
         if (operation === lifeOperation.plus) {
@@ -73,12 +68,25 @@ const Player = ({ player, playerKey }: PlayerProps) => {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setPlayerLife(tempLifeAmount);
+            setPlayers((prevPlayers) => {
+                const current = prevPlayers.find(player => player.id === playerId);
+                if (!current) return prevPlayers;
+
+                if (current.lifePoints === tempLifeAmount) return prevPlayers;
+
+                const updatedPlayer = playerNewLifeHistory(current, tempLifeAmount);
+
+                const newPlayers = prevPlayers.map(prevPlayer => {
+                    if (prevPlayer.id === current.id ) return updatedPlayer;
+                    return prevPlayer;
+                });
+
+                return newPlayers;
+            });
         }, 1500);
 
         return () => clearTimeout(timer);
-        // eslint-disable-next-line
-    }, [tempLifeAmount]);
+    }, [tempLifeAmount, playerId, setPlayers]);
 
     const renderPlayerCounters = () => {
         return (
